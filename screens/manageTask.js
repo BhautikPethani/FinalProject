@@ -13,8 +13,8 @@ import * as helper from "../services/helper";
 import {
   checkUserIsSignedInOrNot,
   signOutCurrentUser,
-  getWorkspaces,
-  deleteWorkspace,
+  getAllTasks,
+  deleteTask,
 } from "../services/firebaseConfig";
 
 const tabs = {
@@ -24,42 +24,38 @@ const tabs = {
   workspace: { title: "Manage Workspaces", tabIndex: 4 },
 };
 
-const ManageTask = ({ navigation }) => {
+const ManageTask = ({ route, navigation }) => {
+  const { workspace, currentUser } = route.params;
   var isSignInAlreadyCheck = true;
-  var [currentWorkspace, setCurrentWorkspace] = useState("");
-  var currentUser = null;
-  var [allWorkspaces, setAllWorkSpaces] = useState("");
+  var [allTask, setAllTask] = useState("");
   const [refreshSwitch, setRefreshSwitch] = useState(true);
 
+  // console.log(currentUser);
   function refresh() {
-    helper.getAsync("currentUser").then((data) => {
-      getWorkspaces(data.email)
-        .then((workspaces) => {
-          // console.log("WORKSPACE: " + workspaces);
-          if (workspaces.length > 0) {
-            setAllWorkSpaces(workspaces);
-            setRefreshSwitch(false);
-          } else {
-            // navigation.replace("ManageWorkspace");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
+    getAllTasks(workspace.key, currentUser.email)
+      .then((tasks) => {
+        // console.log("WORKSPACE: " + workspaces);
+        if (tasks.length > 0) {
+          setAllTask(tasks);
+          setRefreshSwitch(false);
+        } else {
+          // navigation.replace("ManageWorkspace");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
-  function getAllWorkspacesToDashboard(email) {
+  function getAllTasksToDashboard() {
     // console.log("TEST 2");
-    if (
-      (currentWorkspace == "" || currentWorkspace == undefined) &&
-      refreshSwitch
-    ) {
-      getWorkspaces(email)
-        .then((workspaces) => {
+    if (refreshSwitch) {
+      getAllTasks(workspace.key, currentUser.email)
+        .then((tasks) => {
           // console.log("WORKSPACE: " + workspaces);
-          if (workspaces.length > 0) {
-            setAllWorkSpaces(workspaces);
+          if (tasks.length > 0) {
+            // console.log(tasks);
+            setAllTask(tasks);
             setRefreshSwitch(false);
           } else {
             // navigation.replace("ManageWorkspace");
@@ -73,21 +69,7 @@ const ManageTask = ({ navigation }) => {
   }
 
   if (isSignInAlreadyCheck) {
-    helper.getAsync("currentUser").then((data) => {
-      if (data != undefined || data != "") {
-        checkUserIsSignedInOrNot()
-          .then((user) => {
-            // console.log(user);
-            currentUser = user;
-            // console.log("TEST 1");
-            getAllWorkspacesToDashboard(user.email);
-          })
-          .catch((err) => {
-            helper.setAsync("currentUser", "");
-            // navigation.replace("Login");
-          });
-      }
-    });
+    getAllTasksToDashboard();
     isSignInAlreadyCheck = false;
   }
 
@@ -103,8 +85,8 @@ const ManageTask = ({ navigation }) => {
       });
   };
 
-  const handleDelete = async (workspaceId) => {
-    await deleteWorkspace(workspaceId)
+  const handleDelete = async (taskId) => {
+    await deleteTask(taskId)
       .then((success) => {
         // console.log(data);
 
@@ -117,18 +99,20 @@ const ManageTask = ({ navigation }) => {
   };
 
   const Item = ({ item }) => {
-    // console.log(item.val().participants);
+    console.log(item);
     return (
       <TouchableOpacity onPress={() => {}}>
         <View style={styles.item}>
           <View style={styles.cardDetails}>
-            <Text style={styles.title}>{item.val().workspaceName}</Text>
+            <Text style={styles.title}>{item.val().taskName}</Text>
             <Text style={styles.population}>
-              <Text style={styles.bold}>Admin: </Text>
-              {helper.getAdminFromWorkspaceName(item.key)}
+              <Text style={styles.bold}>Due: </Text>
+              {item.val().taskDueDate}
             </Text>
             <Text style={styles.population}>
-              {helper.getParticipantsListInText(item.val().participants)}
+              <Text style={styles.bold}>
+                {item.val().status == -1 ? "Pending" : "In-Progress"}
+              </Text>
             </Text>
           </View>
           <TouchableOpacity
@@ -152,19 +136,17 @@ const ManageTask = ({ navigation }) => {
             onPress={
               () => {
                 setRefreshSwitch(true);
-                navigation.navigate("Add Workspace");
+                navigation.navigate("Add Task", { workspace, currentUser });
               }
               // navigation.navigate("Step 2", { firstName, lastName, email })
             }
           >
-            <Text style={[styles.buttonText, styles.textBlack]}>
-              Add Workspace
-            </Text>
+            <Text style={[styles.buttonText, styles.textBlack]}>Add Task</Text>
           </TouchableOpacity>
         </TouchableOpacity>
       </ScrollView>
       <FlatList
-        data={allWorkspaces}
+        data={allTask}
         renderItem={({ item }) => <Item item={item} />}
         keyExtractor={(item) => item.key}
       />
@@ -172,7 +154,7 @@ const ManageTask = ({ navigation }) => {
         <View style={styles.row}>
           <TouchableOpacity onPress={() => {}}>
             <Image
-              style={styles.tabIcon}
+              style={styles.tabActiveIcon}
               source={require("../assets/addtask-white.png")}
             />
           </TouchableOpacity>
@@ -194,7 +176,7 @@ const ManageTask = ({ navigation }) => {
             }}
           >
             <Image
-              style={styles.tabActiveIcon}
+              style={styles.tabIcon}
               source={require("../assets/workspace-white.png")}
             />
           </TouchableOpacity>

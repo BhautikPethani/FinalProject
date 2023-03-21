@@ -180,6 +180,48 @@ export function setWorkSpace(workspaceName, userName, participants) {
   });
 }
 
+export function addTask(
+  taskName,
+  taskDescription,
+  participants,
+  startDate,
+  endDate,
+  status,
+  workspaceKey
+) {
+  return new Promise(async (resolve, reject) => {
+    if (
+      participants.indexOf(helper.getUsernameFromWorkspaceKey(workspaceKey)) ==
+      -1
+    ) {
+      participants.push(helper.getUsernameFromWorkspaceKey(workspaceKey));
+    }
+    set(ref(database, "task/" + Date.now() + "=+-" + workspaceKey), {
+      workspaceKey: workspaceKey,
+      taskName: taskName,
+      taskDescription: taskDescription,
+      taskStartDate: startDate,
+      taskDueDate: endDate,
+      participants: participants,
+      status: status,
+    })
+      .then(() => {
+        resolve({
+          label: "success",
+          message: "Task successfully added",
+        });
+        // getWorkspaces();
+      })
+      .catch((error) => {
+        console.log(error.code);
+        resolve({
+          label: "Opps!",
+          message: "Something went wrong",
+        });
+      });
+  });
+}
+
 export function deleteWorkspace(workspaceID) {
   return new Promise(async (resolve, reject) => {
     set(ref(database, "workspaces/" + workspaceID), {})
@@ -195,6 +237,51 @@ export function deleteWorkspace(workspaceID) {
           label: "Opps !",
           message: "Something went wrong",
         });
+      });
+  });
+}
+
+export function deleteTask(taskKey) {
+  return new Promise(async (resolve, reject) => {
+    set(ref(database, "task/" + taskKey), {})
+      .then(() => {
+        resolve({
+          label: "success",
+          message: "Task deleted successfully !!",
+        });
+      })
+      .catch((error) => {
+        console.log(error.code);
+        resolve({
+          label: "Opps !",
+          message: "Something went wrong",
+        });
+      });
+  });
+}
+
+export function getAllTasks(currentWorkspaceKey, currentUser) {
+  return new Promise(async (resolve, reject) => {
+    get(child(ref(database), "task/"))
+      .then((snapshot) => {
+        var allTasks = [];
+        snapshot.forEach((childSnapshot) => {
+          // console.log(childSnapshot.val().participants.indexOf(generateUsername(currentUser.email)));
+          if (
+            childSnapshot
+              .val()
+              .participants.indexOf(helper.generateUsername(currentUser)) !=
+              -1 &&
+            childSnapshot.val().workspaceKey == currentWorkspaceKey
+          ) {
+            // console.log("ABC" + childSnapshot);
+            allTasks.push(childSnapshot);
+          }
+        });
+        resolve(allTasks);
+      })
+      .catch((error) => {
+        reject(error);
       });
   });
 }

@@ -116,28 +116,28 @@ const ManageWorkspace = ({ navigation }) => {
       });
   };
 
-  const Item = ({ item }) => {
+  const Item = ({ workspace }) => {
     // console.log(item.val().participants);
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("Manage Task");
+          navigation.navigate("Manage Task", { workspace, currentUser });
         }}
       >
         <View style={styles.item}>
           <View style={styles.cardDetails}>
-            <Text style={styles.title}>{item.val().workspaceName}</Text>
+            <Text style={styles.title}>{workspace.val().workspaceName}</Text>
             <Text style={styles.population}>
               <Text style={styles.bold}>Admin: </Text>
-              {helper.getAdminFromWorkspaceName(item.key)}
+              {helper.getAdminFromWorkspaceName(workspace.key)}
             </Text>
             <Text style={styles.population}>
-              {helper.getParticipantsListInText(item.val().participants)}
+              {helper.getParticipantsListInText(workspace.val().participants)}
             </Text>
           </View>
           <TouchableOpacity
             style={styles.delete}
-            onPress={() => handleDelete(item.key)}
+            onPress={() => handleDelete(workspace.key)}
           >
             <Text style={styles.deleteText}>Delete</Text>
           </TouchableOpacity>
@@ -169,7 +169,7 @@ const ManageWorkspace = ({ navigation }) => {
       </ScrollView>
       <FlatList
         data={allWorkspaces}
-        renderItem={({ item }) => <Item item={item} />}
+        renderItem={({ item }) => <Item workspace={item} />}
         keyExtractor={(item) => item.key}
       />
       <View style={[styles.bottomNavigationContainer, styles.bgBlack]}>

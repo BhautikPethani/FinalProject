@@ -17,6 +17,11 @@ export function getAdminFromWorkspaceName(workspaceName) {
   return splitWorkspaceName[1];
 }
 
+export function getUsernameFromWorkspaceKey(key) {
+  var splitArray = key.split("-+=");
+  return splitArray[1];
+}
+
 export function getParticipantsListInText(list) {
   var temp = "";
   console.log(list);

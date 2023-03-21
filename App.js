@@ -5,7 +5,8 @@ import SignUpScreen from "./screens/SignUpScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ManageWorkspace from "./screens/manageWorkspace";
 import CreateNewWorkspace from "./screens/CreateNewWorkspace";
-import ManageTask from "./screens/addNewTask";
+import CreateNewTask from "./screens/CreateNewTask";
+import ManageTask from "./screens/manageTask";
 
 const Stack = createStackNavigator();
 
@@ -34,7 +35,13 @@ const App = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="Add Workspace" component={CreateNewWorkspace} />
-        <Stack.Screen name="Manage Task" component={ManageTask} />
+
+        <Stack.Screen
+          name="Manage Task"
+          component={ManageTask}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Add Task" component={CreateNewTask} />
       </Stack.Navigator>
     </NavigationContainer>
   );

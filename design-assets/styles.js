@@ -60,6 +60,18 @@ export const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 8,
   },
+  datePicker: {
+    width: "96%",
+    backgroundColor: Colors.greyColor,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 15,
+    borderRadius: 10,
+    fontSize: 18,
+    paddingHorizontal: 20,
+    marginVertical: 8,
+    marginHorizontal: 8,
+  },
   button: {
     backgroundColor: Colors.blackColor,
     alignItems: "center",

@@ -36,7 +36,7 @@ const LoginScreen = ({ navigation }) => {
           .then((data) => {
             // console.log(data);
             helper.setAsync("currentUser", data);
-            navigation.replace("Dashboard");
+            navigation.replace("Manage Workspace");
           })
           .catch((err) => {
             console.log(err);
