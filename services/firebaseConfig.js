@@ -127,6 +127,7 @@ export function getWorkspaces(email) {
             allWorkspaces.push(childSnapshot);
           }
         });
+        console.log("WORKSPACE" + allWorkspaces);
         resolve(allWorkspaces);
       })
       .catch((error) => {

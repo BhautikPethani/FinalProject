@@ -14,6 +14,7 @@ import {
   signOutCurrentUser,
   getWorkspaces,
 } from "../services/firebaseConfig";
+import { ManageWorkspace } from "../screens/tabs/manageWorkspace";
 
 const tabs = {
   addTask: { title: "Add New Task", tabIndex: 1 },
@@ -23,43 +24,48 @@ const tabs = {
 };
 
 const HomeScreen = ({ navigation }) => {
-  const [isSignInAlreadyCheck, setIsSignInAlreadyCheck] = useState(true);
-  const [currentWorkspace, setCurrentWorkspace] = useState("");
-  const [currentTab, setCurrentTab] = useState(tabs.dashboard);
-  const currentUser = null;
-
-  navigation.setOptions({ title: currentTab.title });
-  if (isSignInAlreadyCheck) {
-    helper.getAsync("currentUser").then((data) => {
-      if (data != undefined || data != "") {
-        checkUserIsSignedInOrNot()
-          .then((user) => {
-            // console.log(user);
-            currentUser = user;
-            getAllWorkspacesToDashboard(user.email);
-          })
-          .catch((err) => {
-            helper.setAsync("currentUser", "");
-            navigation.replace("Login");
-          });
-      }
-    });
-    setIsSignInAlreadyCheck(false);
-  }
+  var isSignInAlreadyCheck = true;
+  var [currentWorkspace, setCurrentWorkspace] = useState("");
+  var [currentTab, setCurrentTab] = useState(tabs.dashboard);
+  var currentUser = null;
+  var allWorkspaces = null;
 
   function getAllWorkspacesToDashboard(email) {
+    console.log("TEST 2");
     if (currentWorkspace == "" || currentWorkspace == undefined) {
-      getAllWorkspaces(email)
+      getWorkspaces(email)
         .then((workspaces) => {
+          console.log("WORKSPACE: " + workspaces);
           if (workspaces.length > 0) {
+            allWorkspaces = workspaces;
           } else {
-            // setCurrentTab(tabs.workspace);
+            setCurrentTab(tabs.workspace);
           }
         })
         .catch((err) => {
           console.log(err);
         });
+      isSignInAlreadyCheck = false;
     }
+  }
+
+  if (isSignInAlreadyCheck) {
+    helper.getAsync("currentUser").then((data) => {
+      if (data != undefined || data != "") {
+        checkUserIsSignedInOrNot()
+          .then((user) => {
+            console.log(user);
+            currentUser = user;
+            // console.log("TEST 1");
+            getAllWorkspacesToDashboard(user.email);
+          })
+          .catch((err) => {
+            helper.setAsync("currentUser", "");
+            // navigation.replace("Login");
+          });
+      }
+    });
+    isSignInAlreadyCheck = false;
   }
 
   const handleSignOut = async () => {
@@ -74,9 +80,22 @@ const HomeScreen = ({ navigation }) => {
       });
   };
 
+  const manageTabs = () => {
+    if (currentTab.tabIndex == 4) {
+      return <ManageWorkspace />;
+    } else {
+      return;
+    }
+  };
+
   return (
     <View style={[styles.container, styles.bgWhite]}>
-      <ScrollView style={[styles.tabContainer, styles.bgWhite]}></ScrollView>
+      <Text style={[styles.tabHeading, styles.textBlack]}>
+        {currentTab.title}
+      </Text>
+      <ScrollView style={[styles.tabContainer, styles.bgWhite]}>
+        {manageTabs()}
+      </ScrollView>
       <View style={[styles.bottomNavigationContainer, styles.bgBlack]}>
         <View style={styles.row}>
           <TouchableOpacity

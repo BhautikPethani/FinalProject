@@ -38,6 +38,13 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: "40%",
   },
+  tabHeading: {
+    fontSize: 26,
+    color: Colors.whiteColor,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: "17%",
+  },
   inputFlex1: {
     flex: 1,
   },
@@ -85,5 +92,8 @@ export const styles = StyleSheet.create({
     height: 25,
     width: 25,
     marginHorizontal: 25,
+  },
+  textBlack: {
+    color: Colors.blackColor,
   },
 });
