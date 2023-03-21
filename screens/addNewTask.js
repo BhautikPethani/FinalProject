@@ -24,7 +24,7 @@ const tabs = {
   workspace: { title: "Manage Workspaces", tabIndex: 4 },
 };
 
-const ManageWorkspace = ({ navigation }) => {
+const ManageTask = ({ navigation }) => {
   var isSignInAlreadyCheck = true;
   var [currentWorkspace, setCurrentWorkspace] = useState("");
   var currentUser = null;
@@ -119,11 +119,7 @@ const ManageWorkspace = ({ navigation }) => {
   const Item = ({ item }) => {
     // console.log(item.val().participants);
     return (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("Manage Task");
-        }}
-      >
+      <TouchableOpacity onPress={() => {}}>
         <View style={styles.item}>
           <View style={styles.cardDetails}>
             <Text style={styles.title}>{item.val().workspaceName}</Text>
@@ -148,7 +144,7 @@ const ManageWorkspace = ({ navigation }) => {
 
   return (
     <View style={[styles.container, styles.bgWhite]}>
-      <Text style={[styles.tabHeading, styles.textBlack]}>ManageWorkspace</Text>
+      <Text style={[styles.tabHeading, styles.textBlack]}>Manage Tasks</Text>
       <ScrollView style={[styles.tabContainer, styles.bgWhite]}>
         <TouchableOpacity onPress={() => {}}>
           <TouchableOpacity
@@ -218,4 +214,4 @@ const ManageWorkspace = ({ navigation }) => {
   );
 };
 
-export default ManageWorkspace;
+export default ManageTask;
