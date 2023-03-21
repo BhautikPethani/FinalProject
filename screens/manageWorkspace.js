@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  FlatList,
   Image,
 } from "react-native";
 import { styles } from "../design-assets/styles";
@@ -13,6 +14,7 @@ import {
   checkUserIsSignedInOrNot,
   signOutCurrentUser,
   getWorkspaces,
+  deleteWorkspace,
 } from "../services/firebaseConfig";
 
 const tabs = {
@@ -22,22 +24,45 @@ const tabs = {
   workspace: { title: "Manage Workspaces", tabIndex: 4 },
 };
 
-const HomeScreen = ({ navigation }) => {
+const ManageWorkspace = ({ navigation }) => {
   var isSignInAlreadyCheck = true;
   var [currentWorkspace, setCurrentWorkspace] = useState("");
   var currentUser = null;
-  var allWorkspaces = null;
+  var [allWorkspaces, setAllWorkSpaces] = useState("");
+  const [refreshSwitch, setRefreshSwitch] = useState(true);
+
+  if (refreshSwitch) {
+    helper.getAsync("currentUser").then((data) => {
+      getWorkspaces(data.email)
+        .then((workspaces) => {
+          // console.log("WORKSPACE: " + workspaces);
+          if (workspaces.length > 0) {
+            setAllWorkSpaces(workspaces);
+            setRefreshSwitch(false);
+          } else {
+            // navigation.replace("ManageWorkspace");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  }
 
   function getAllWorkspacesToDashboard(email) {
-    console.log("TEST 2");
-    if (currentWorkspace == "" || currentWorkspace == undefined) {
+    // console.log("TEST 2");
+    if (
+      (currentWorkspace == "" || currentWorkspace == undefined) &&
+      refreshSwitch
+    ) {
       getWorkspaces(email)
         .then((workspaces) => {
-          console.log("WORKSPACE: " + workspaces);
+          // console.log("WORKSPACE: " + workspaces);
           if (workspaces.length > 0) {
-            allWorkspaces = workspaces;
+            setAllWorkSpaces(workspaces);
+            setRefreshSwitch(false);
           } else {
-            navigation.replace("Manage Workspace");
+            // navigation.replace("ManageWorkspace");
           }
         })
         .catch((err) => {
@@ -52,7 +77,7 @@ const HomeScreen = ({ navigation }) => {
       if (data != undefined || data != "") {
         checkUserIsSignedInOrNot()
           .then((user) => {
-            console.log(user);
+            // console.log(user);
             currentUser = user;
             // console.log("TEST 1");
             getAllWorkspacesToDashboard(user.email);
@@ -78,10 +103,71 @@ const HomeScreen = ({ navigation }) => {
       });
   };
 
+  const handleDelete = async (workspaceId) => {
+    await deleteWorkspace(workspaceId)
+      .then((success) => {
+        // console.log(data);
+        helper.alertBox(success);
+        setRefreshSwitch(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        refresh();
+      });
+  };
+
+  const Item = ({ item }) => {
+    // console.log(item.val().participants);
+    return (
+      <TouchableOpacity onPress={() => {}}>
+        <View style={styles.item}>
+          <View style={styles.cardDetails}>
+            <Text style={styles.title}>{item.val().workspaceName}</Text>
+            <Text style={styles.population}>
+              <Text style={styles.bold}>Admin: </Text>
+              {helper.getAdminFromWorkspaceName(item.key)}
+            </Text>
+            <Text style={styles.population}>
+              {helper.getParticipantsListInText(item.val().participants)}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.delete}
+            onPress={() => handleDelete(item.key)}
+          >
+            <Text style={styles.deleteText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={[styles.container, styles.bgWhite]}>
-      <Text style={[styles.tabHeading, styles.textBlack]}>Dashboard</Text>
-      <ScrollView style={[styles.tabContainer, styles.bgWhite]}></ScrollView>
+      <Text style={[styles.tabHeading, styles.textBlack]}>ManageWorkspace</Text>
+      <ScrollView style={[styles.tabContainer, styles.bgWhite]}>
+        <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.buttonBorder}
+            onPress={
+              () => {
+                setRefreshSwitch(true);
+                navigation.navigate("Add Workspace");
+              }
+              // navigation.navigate("Step 2", { firstName, lastName, email })
+            }
+          >
+            <Text style={[styles.buttonText, styles.textBlack]}>
+              Add Workspace
+            </Text>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </ScrollView>
+      <FlatList
+        data={allWorkspaces}
+        renderItem={({ item }) => <Item item={item} />}
+        keyExtractor={(item) => item.key}
+      />
       <View style={[styles.bottomNavigationContainer, styles.bgBlack]}>
         <View style={styles.row}>
           <TouchableOpacity onPress={() => {}}>
@@ -108,7 +194,7 @@ const HomeScreen = ({ navigation }) => {
             }}
           >
             <Image
-              style={styles.tabIcon}
+              style={styles.tabActiveIcon}
               source={require("../assets/workspace-white.png")}
             />
           </TouchableOpacity>
@@ -128,4 +214,4 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-export default HomeScreen;
+export default ManageWorkspace;

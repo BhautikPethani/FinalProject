@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
   },
   tabContainer: {
     backgroundColor: Colors.blackColor,
+    padding: 20,
   },
   bottomNavigationContainer: {
     height: "12%",
@@ -70,6 +71,26 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginHorizontal: 8,
   },
+  buttonBorder: {
+    borderWidth: 2,
+    borderColor: Colors.blackColor,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 50,
+    fontSize: 20,
+    paddingHorizontal: 20,
+    marginHorizontal: 8,
+  },
+  dropdown: {
+    height: 50,
+    backgroundColor: Colors.greyColor,
+    borderRadius: 12,
+    padding: 20,
+    marginHorizontal: 8,
+  },
   buttonText: {
     color: "#fff",
     fontSize: 20,
@@ -93,7 +114,59 @@ export const styles = StyleSheet.create({
     width: 25,
     marginHorizontal: 25,
   },
+  tabActiveIcon: {
+    height: 35,
+    width: 35,
+    marginHorizontal: 20,
+  },
   textBlack: {
     color: Colors.blackColor,
+  },
+
+  item: {
+    backgroundColor: Colors.blackColor,
+    padding: 20,
+    width: 360,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 10,
+    flexDirection: "row",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: Colors.whiteColor,
+  },
+  bold: {
+    fontWeight: "bold",
+  },
+  population: {
+    fontSize: 16,
+    color: Colors.greyColor,
+  },
+  flagIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  cardDetails: {
+    margin: 5,
+    marginLeft: 20,
+    paddingRight: "auto",
+  },
+  delete: {
+    backgroundColor: "red",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    height: 40,
+    borderRadius: 5,
+    marginTop: 10,
+    marginLeft: "auto",
+  },
+  deleteText: {
+    fontWeight: "bold",
+    color: "#fff",
   },
 });

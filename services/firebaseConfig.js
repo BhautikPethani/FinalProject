@@ -64,6 +64,24 @@ export async function registerNewUser(
   });
 }
 
+export async function getAllUsers() {
+  return new Promise(async (resolve, reject) => {
+    get(child(ref(database), "users/"))
+      .then((snapshot) => {
+        var allUsers = [];
+        var counter = 1;
+        snapshot.forEach((childSnapshot) => {
+          allUsers.push({ id: childSnapshot.key, name: childSnapshot.key });
+          counter++;
+        });
+        resolve(allUsers);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 export async function signIn(email, password) {
   return new Promise(async (resolve, reject) => {
     await signInWithEmailAndPassword(auth, email, password)
@@ -127,11 +145,56 @@ export function getWorkspaces(email) {
             allWorkspaces.push(childSnapshot);
           }
         });
-        console.log("WORKSPACE" + allWorkspaces);
+        // console.log("WORKSPACE" + allWorkspaces);
         resolve(allWorkspaces);
       })
       .catch((error) => {
         reject(error);
+      });
+  });
+}
+
+export function setWorkSpace(workspaceName, userName, participants) {
+  return new Promise(async (resolve, reject) => {
+    if (participants.indexOf(userName) == -1) {
+      participants.push(userName);
+    }
+    set(ref(database, "workspaces/" + workspaceName + "-+=" + userName), {
+      workspaceName: workspaceName,
+      participants: participants,
+    })
+      .then(() => {
+        resolve({
+          label: "success",
+          message: "Workspace successfully added",
+        });
+        // getWorkspaces();
+      })
+      .catch((error) => {
+        console.log(error.code);
+        resolve({
+          label: "Opps!",
+          message: "Something went wrong",
+        });
+      });
+  });
+}
+
+export function deleteWorkspace(workspaceID) {
+  return new Promise(async (resolve, reject) => {
+    set(ref(database, "workspaces/" + workspaceID), {})
+      .then(() => {
+        resolve({
+          label: "success",
+          message: "Workspace deleted successfully !!",
+        });
+      })
+      .catch((error) => {
+        console.log(error.code);
+        resolve({
+          label: "Opps !",
+          message: "Something went wrong",
+        });
       });
   });
 }

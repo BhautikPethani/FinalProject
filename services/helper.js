@@ -12,6 +12,20 @@ export function generateUsername(email) {
   return splitArray[0];
 }
 
+export function getAdminFromWorkspaceName(workspaceName) {
+  var splitWorkspaceName = workspaceName.split("-+=");
+  return splitWorkspaceName[1];
+}
+
+export function getParticipantsListInText(list) {
+  var temp = "";
+  console.log(list);
+  for (let x of list) {
+    temp += "@" + x + ", ";
+  }
+  return temp;
+}
+
 export function alertBox({ label, message }) {
   return Alert.alert(label, message, [
     { text: "OK", onPress: () => console.log("OK Pressed") },
